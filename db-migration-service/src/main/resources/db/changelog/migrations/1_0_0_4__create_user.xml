@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
+
+    <changeSet id="1_0_0_4_create_users_table" author="oma">
+        <createTable tableName="users">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="first_name" type="VARCHAR(255)"/>
+            <column name="last_name" type="VARCHAR(255)"/>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="phone_number" type="VARCHAR(20)"/>
+            <column name="user_name" type="VARCHAR(255)"/>
+            <column name="transaction_pin" type="VARCHAR(10)"/>
+            <column name="date_of_birth" type="DATE"/>
+            <column name="account_type" type="VARCHAR(50)"/>
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="created_on" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="last_modified_on" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1_0_0_4a_add_users_table_indexes" author="oma">
+        <createIndex indexName="idx_users_email" tableName="users">
+            <column name="email"/>
+        </createIndex>
+        <createIndex indexName="idx_users_phone_number" tableName="users">
+            <column name="phone_number"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

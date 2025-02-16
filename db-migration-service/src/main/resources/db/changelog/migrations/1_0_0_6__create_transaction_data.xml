@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
+
+    <changeSet id="1_0_0_6__create_transaction_data" author="oma">
+        <createTable tableName="transaction_data">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="currency" type="VARCHAR(50)"/>
+
+            <column name="sender_currency" type="VARCHAR(50)"/>
+
+            <column name="receiver_currency" type="VARCHAR(50)"/>
+
+            <column name="amount" type="DOUBLE"/>
+
+            <column name="amount_in_sender_currency" type="DOUBLE"/>
+
+            <column name="amount_in_receiver_currency" type="DOUBLE"/>
+
+            <column name="sender" type="VARCHAR(255)"/>
+
+            <column name="account_name" type="VARCHAR(255)"/>
+
+            <column name="account_number" type="VARCHAR(50)"/>
+
+            <column name="description" type="TEXT"/>
+
+            <column name="reference_number" type="VARCHAR(100)"/>
+
+            <column name="transaction_type" type="VARCHAR(50)"/>
+
+            <column name="wallet_id" type="UUID"/>
+
+            <column name="user_id" type="UUID"/>
+
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="created_on" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="last_modified_on" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1_0_0_6a__add_foreign_keys_transaction_data" author="oma">
+        <addForeignKeyConstraint baseTableName="transaction_data"
+                                 baseColumnNames="wallet_id"
+                                 referencedTableName="wallets"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_transaction_data_wallet"/>
+
+        <addForeignKeyConstraint baseTableName="transaction_data"
+                                 baseColumnNames="user_id"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_transaction_data_user"/>
+    </changeSet>
+
+    <changeSet id="1_0_0_6b__add_indexes_transaction_data" author="oma">
+        <createIndex indexName="idx_transaction_data_user_id"
+                     tableName="transaction_data">
+            <column name="user_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_transaction_data_wallet_id"
+                     tableName="transaction_data">
+            <column name="wallet_id"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

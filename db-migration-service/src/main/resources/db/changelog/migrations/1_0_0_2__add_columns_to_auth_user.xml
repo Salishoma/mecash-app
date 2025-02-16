@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
+
+    <changeSet id="1_0_0_2__add_account_type" author="oma">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="auth_user" columnName="account_type"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="auth_user">
+            <column name="account_type" type="VARCHAR(50)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1_0_0_3__add_transaction_pin" author="oma">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="auth_user" columnName="transaction_pin"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="auth_user">
+            <column name="transaction_pin" type="VARCHAR(10)"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

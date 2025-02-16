@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <include file="db/changelog/migrations/1_0_0_1__create_auth_user.xml"/>
+    <include file="db/changelog/migrations/1_0_0_2__add_columns_to_auth_user.xml"/>
+    <include file="db/changelog/migrations/1_0_0_4__create_user.xml"/>
+    <include file="db/changelog/migrations/1_0_0_5__create_wallets.xml"/>
+    <include file="db/changelog/migrations/1_0_0_6__create_transaction_data.xml"/>
+<!--    <include file="db/changelog/migrations/1_0_0_1__create_auth_user.xml"/>-->
+<!--    <include file="db/changelog/migrations/1_0_0_1__create_auth_user.xml"/>-->
+<!--    <include file="db/changelog/migrations/1_0_0_2__add_column.sql"/>-->
+<!--    <include file="db/changelog/migrations/1_0_1_0__modify_table.sql"/>-->
+
+</databaseChangeLog>

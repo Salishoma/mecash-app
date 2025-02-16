@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.8.xsd">
+
+    <changeSet id="1_0_0_5__create_wallets" author="oma">
+        <createTable tableName="wallets">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="user_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="currency" type="VARCHAR(50)"/>
+
+            <column name="amount" type="DOUBLE"/>
+
+            <column name="country" type="VARCHAR(10)" defaultValue="NG"/>
+
+            <column name="account_type" type="VARCHAR(50)"/>
+
+            <column name="bank_name" type="VARCHAR(255)"/>
+
+            <column name="account_name" type="VARCHAR(255)"/>
+
+            <column name="account_number" type="VARCHAR(50)"/>
+
+            <column name="created_by" type="VARCHAR(255)"/>
+            <column name="created_on" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="last_modified_by" type="VARCHAR(255)"/>
+            <column name="last_modified_on" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1_0_0_5a__add_foreign_key_wallets_user" author="oma">
+        <addForeignKeyConstraint baseTableName="wallets"
+                                 baseColumnNames="user_id"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"
+                                 constraintName="fk_wallets_user"/>
+    </changeSet>
+
+    <changeSet id="1_0_0_5b__add_index_wallets_user_id" author="oma">
+        <createIndex indexName="idx_wallets_user_id"
+                     tableName="wallets">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
