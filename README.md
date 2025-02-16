@@ -41,3 +41,70 @@ Below are the key endpoints for interacting with the meCash API:
 - **GET** */api/transactions/transaction-history* - To view all transactions done by the wallet owner.Throws AuthenticateUserException for unauthorized users.
 - **POST** */api/wallets/account* - To create wallet.Throws AuthenticateUserException for unauthorized users.
 - **GET** */api/wallets/account* - To get wallet.Throws AuthenticateUserException for unauthorized users.
+
+
+# Database Tables Structure
+Below is the tabular form of all the tables and their constraints.
+
+### Users Table
+| Column Name       | Data Type  | Constraints                |
+|------------------|-----------|----------------------------|
+| id               | UUID      | Primary Key, Not Null      |
+| first_name       | String    |                            |
+| last_name        | String    |                            |
+| email            | String    | Not Null, Unique           |
+| phone_number     | String    |                            |
+| user_name        | String    |                            |
+| transaction_pin  | String    |                            |
+| date_of_birth    | Date      |                            |
+| account_type     | Enum      |                            |
+| address          | Embedded  |                            |
+| created_by       | String    |                            |
+| created_on       | Timestamp |                            |
+| last_modified_by | String    |                            |
+| last_modified_on | Timestamp |                            |
+
+### Wallets Table
+| Column Name     | Data Type  | Constraints               |
+|----------------|-----------|---------------------------|
+| id             | UUID      | Primary Key, Not Null     |
+| user_id        | UUID      | Foreign Key (Users.id)    |
+| currency       | Enum      |                            |
+| amount         | Double    |                            |
+| country        | String    | Default 'NG'              |
+| account_type   | Enum      |                            |
+| bank_name      | String    |                            |
+| account_name   | String    |                            |
+| account_number | String    |                            |
+
+### Transaction Data Table
+| Column Name                  | Data Type  | Constraints                     |
+|------------------------------|-----------|---------------------------------|
+| id                           | UUID      | Primary Key, Not Null           |
+| currency                     | Enum      |                                 |
+| sender_currency              | Enum      |                                 |
+| receiver_currency            | Enum      |                                 |
+| amount                       | Double    |                                 |
+| amount_in_sender_currency    | Double    |                                 |
+| amount_in_receiver_currency  | Double    |                                 |
+| sender                       | String    |                                 |
+| account_name                 | String    |                                 |
+| account_number               | String    |                                 |
+| description                  | String    |                                 |
+| reference_number             | String    |                                 |
+| transaction_type             | Enum      |                                 |
+| wallet_id                    | UUID      | Foreign Key (Wallets.id)        |
+| user_id                      | UUID      | Foreign Key (Users.id)          |
+
+### Auth User Table
+| Column Name       | Data Type  | Constraints                |
+|------------------|-----------|----------------------------|
+| id               | UUID      | Primary Key, Not Null      |
+| email            | String    | Not Null, Unique           |
+| password         | String    | Not Null                   |
+| created_date     | Timestamp | Not Null, Auto Generated   |
+| roles           | Set<Enum> | Not Null                   |
+| user_id         | UUID      | Foreign Key (Users.id), Unique, Not Null |
+| account_type     | Enum      |                            |
+| transaction_pin  | String    |                            |
+
