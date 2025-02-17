@@ -26,9 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -76,7 +74,6 @@ public class TransactionService {
         SecurityUser loggedInUser = authUserService.getPrincipal();
         AuthUser authUser = authUserService.findUserByEmail(loggedInUser.getEmail());
         String transactionPin = authUser.getTransactionPin();
-        System.out.println("transactionPin: " + transactionPin);
 
         if(!passwordEncoder.matches(depositorDTO.getTransactionPin(), transactionPin)){
             throw new TransactionPinException("Invalid pin. Transaction terminated");

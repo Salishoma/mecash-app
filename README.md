@@ -75,7 +75,7 @@ Below is the tabular form of all the tables and their constraints.
 | id             | UUID      | Primary Key, Not Null     |
 | user_id        | UUID      | Foreign Key (Users.id)    |
 | currency       | Enum      |                            |
-| amount         | Double    |                            |
+| amount         | DECIMAL(19,2)    |                            |
 | country        | String    | Default 'NG'              |
 | account_type   | Enum      |                            |
 | bank_name      | String    |                            |
@@ -89,9 +89,9 @@ Below is the tabular form of all the tables and their constraints.
 | currency                     | Enum      |                                 |
 | sender_currency              | Enum      |                                 |
 | receiver_currency            | Enum      |                                 |
-| amount                       | Double    |                                 |
-| amount_in_sender_currency    | Double    |                                 |
-| amount_in_receiver_currency  | Double    |                                 |
+| amount                       | DECIMAL(19,2)    |                                 |
+| amount_in_sender_currency    | DECIMAL(19,2)    |                                 |
+| amount_in_receiver_currency  | DECIMAL(19,2)    |                                 |
 | sender                       | String    |                                 |
 | account_name                 | String    |                                 |
 | account_number               | String    |                                 |

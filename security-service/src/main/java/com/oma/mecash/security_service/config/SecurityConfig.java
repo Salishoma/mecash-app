@@ -34,7 +34,6 @@ public class SecurityConfig {
     private final AuthUserRepository authUserRepository;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {
-        log.info("In securityFilterChain");
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth ->
