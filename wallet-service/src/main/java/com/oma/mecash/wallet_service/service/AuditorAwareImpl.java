@@ -1,5 +1,6 @@
 package com.oma.mecash.wallet_service.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,6 +11,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Service
+@Slf4j
 public class AuditorAwareImpl implements AuditorAware<String> {
 
     @Override

@@ -20,6 +20,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Getter
@@ -48,13 +49,13 @@ public class TransactionData extends BaseEntity {
     private Currency receiverCurrency;
 
     @Column(name = "amount")
-    private double amount;
+    private BigDecimal amount = BigDecimal.ZERO;
 
     @Column(name = "amount_in_sender_currency")
-    private double amountInSenderCurrency;
+    private BigDecimal amountInSenderCurrency = BigDecimal.ZERO;
 
     @Column(name = "amount_in_receiver_currency")
-    private double amountInReceiverCurrency;
+    private BigDecimal amountInReceiverCurrency = BigDecimal.ZERO;;
 
     @Column(name = "sender")
     private String sender;

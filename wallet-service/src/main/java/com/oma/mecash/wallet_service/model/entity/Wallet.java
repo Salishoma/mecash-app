@@ -18,6 +18,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Getter
@@ -43,7 +44,7 @@ public class Wallet extends BaseEntity {
     private Currency currency;
 
     @Column(name = "amount")
-    private double amount;
+    private BigDecimal amount = BigDecimal.ZERO;;
 
     @Column(name = "country")
     private String country = "NG";
