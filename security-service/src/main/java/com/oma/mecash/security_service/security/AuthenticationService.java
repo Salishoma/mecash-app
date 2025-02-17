@@ -6,7 +6,6 @@ import com.oma.mecash.security_service.model.SecurityUser;
 import com.oma.mecash.security_service.model.entity.AuthUser;
 import com.oma.mecash.security_service.repository.AuthUserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

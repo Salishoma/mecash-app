@@ -28,7 +28,7 @@ Below are the key endpoints for interacting with the meCash API:
 - **POST** */api/users/account* - Register a new account. Throws UserExistsException when account has already been taken.
 - **PUT** */api/users/account* - Update an already existing user. Throws UserNotFoundException when user does not exist, AuthenticateUserException for unauthorized users.
 - **GET** */api/users/account* - Get User's account. Throws UserNotFoundException when user does not exist, AuthenticateUserException for unauthorized users.
-- **POST** */api/users/generate-access-token* - Login endpoint for users. Access token is generated on successful login and this token is used to access other endpoints opened to the user. Throws Unauthorized exception for wrong credentials.
+- **POST** */api/users//auth/login* - Login endpoint for users. Access token is generated on successful login and this token is used to access other endpoints opened to the user. Throws Unauthorized exception for wrong credentials.
 
 ## Pin Operation
 - **POST** */api/users/create-pin* - Logged in user can use this endpoint to create their transaction pin which will be used by the user for any transaction to be done within the app. Throws UserNotFoundException when user does not exist, AuthenticateUserException for unauthorized users.
@@ -41,6 +41,10 @@ Below are the key endpoints for interacting with the meCash API:
 - **GET** */api/transactions/transaction-history* - To view all transactions done by the wallet owner.Throws AuthenticateUserException for unauthorized users.
 - **POST** */api/wallets/account* - To create wallet.Throws AuthenticateUserException for unauthorized users.
 - **GET** */api/wallets/account* - To get wallet.Throws AuthenticateUserException for unauthorized users.
+
+## Application Swagger Docs
+
+The swagger docs api for each module can be accessed via *<BASE_URL>/swagger-ui/index.html*
 
 
 # Database Tables Structure

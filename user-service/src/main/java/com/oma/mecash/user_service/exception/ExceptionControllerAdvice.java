@@ -13,17 +13,17 @@ public class ExceptionControllerAdvice {
 
     @ExceptionHandler(value = UserExistsException.class)
     public final APIResponse<String> handleUserExistsException(UserExistsException exception) {
-        return new APIResponse<>(exception.getMessage(), HttpStatus.NOT_FOUND.value(), "This account has been assigned");
+        return new APIResponse<>(exception.getMessage(), HttpStatus.NOT_FOUND, "This account has been assigned");
     }
 
     @ExceptionHandler(value = UserNotFoundException.class)
     public final APIResponse<String> handleUserNotFoundException(UserNotFoundException exception) {
-        return new APIResponse<>(exception.getMessage(), HttpStatus.NOT_FOUND.value(), "User Not Found");
+        return new APIResponse<>(exception.getMessage(), HttpStatus.NOT_FOUND, "User Not Found");
     }
 
     @ExceptionHandler(value = TransactionPinException.class)
     public final APIResponse<String> handleTransactionPinException(TransactionPinException exception) {
-        return new APIResponse<>(exception.getMessage(), HttpStatus.NOT_FOUND.value(), "User Not Found");
+        return new APIResponse<>(exception.getMessage(), HttpStatus.NOT_FOUND, "User Not Found");
     }
 
     @ExceptionHandler(value = AuthenticateUserException.class)
