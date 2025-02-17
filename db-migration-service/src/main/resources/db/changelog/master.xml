@@ -12,4 +12,6 @@
     <include file="db/changelog/migrations/1_0_0_6__create_transaction_data.xml"/>
     <include file="db/changelog/migrations/1_0_0_7__add_columns_to_user.xml"/>
     <include file="db/changelog/migrations/1_0_0_8__update_column_in_user.xml"/>
+    <include file="db/changelog/migrations/1_0_0_9__update_column_type_in_wallet.xml"/>
+    <include file="db/changelog/migrations/1_0_1_0__update_column_type_in_transaction_data.xml"/>
 </databaseChangeLog>

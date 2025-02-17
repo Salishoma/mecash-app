@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="1_0_1_0__update_amount_column_type" author="oma">
+        <modifyDataType tableName="transaction_data" columnName="amount" newDataType="DECIMAL(19,2)" />
+    </changeSet>
+
+    <changeSet id="1_0_1_0a__update_sender_amount_column_type" author="oma">
+        <modifyDataType tableName="transaction_data" columnName="amount_in_sender_currency" newDataType="DECIMAL(19,2)" />
+    </changeSet>
+
+    <changeSet id="1_0_1_0b__update_receiver_amount_column_type" author="oma">
+        <modifyDataType tableName="transaction_data" columnName="amount_in_receiver_currency" newDataType="DECIMAL(19,2)" />
+    </changeSet>
+
+</databaseChangeLog>
+

@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 
+import java.math.BigDecimal;
+
 @Getter
 public class DepositorDTO {
 
@@ -18,7 +20,7 @@ public class DepositorDTO {
     private String bankName;
 
     @Positive(message = "Amount should be greater than zero")
-    private double amount;
+    private BigDecimal amount;
 
     @NotBlank(message = "Beneficiary account name is required")
     private String beneficiaryAccountName;
@@ -32,5 +34,7 @@ public class DepositorDTO {
     private String description;
 
     private Currency currency;
+
+    private String transactionPin;
 
 }

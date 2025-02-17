@@ -1,11 +1,13 @@
 package com.oma.mecash.wallet_service.service;
 
+import com.oma.mecash.security_service.exception.TransactionPinException;
 import com.oma.mecash.security_service.model.SecurityUser;
 import com.oma.mecash.security_service.model.entity.AuthUser;
 import com.oma.mecash.security_service.service.AuthUserService;
 import com.oma.mecash.wallet_service.dto.DepositorDTO;
 import com.oma.mecash.wallet_service.dto.TransactionResponse;
 import com.oma.mecash.wallet_service.exception.InvalidAmountException;
+import com.oma.mecash.wallet_service.exception.WalletNotFoundException;
 import com.oma.mecash.wallet_service.model.entity.TransactionData;
 import com.oma.mecash.wallet_service.model.entity.Wallet;
 import com.oma.mecash.wallet_service.model.enums.Currency;
@@ -15,9 +17,13 @@ import com.oma.mecash.wallet_service.repository.WalletRepository;
 import com.oma.mecash.wallet_service.util.CurrencyExchangeUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -31,27 +37,35 @@ public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final AuthUserService authUserService;
 
+    private final PasswordEncoder passwordEncoder;
+
     @Value("${institution.number}")
     private String institutionNumber;
 
     @Transactional(rollbackFor = Exception.class)
     public TransactionResponse depositToWallet(DepositorDTO depositorDTO) {
-        double amount = depositorDTO.getAmount();
-        if (amount <= 0) {
+        BigDecimal amount = depositorDTO.getAmount();
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new InvalidAmountException("Amount cannot be less than zero");
         }
 
-        Wallet wallet = walletRepository.findWalletByAccountNumber(depositorDTO.getAccountNumber());
+        Wallet wallet = walletRepository.findWalletByAccountNumber(depositorDTO.getBeneficiaryAccountNumber())
+                .orElseThrow(() -> new WalletNotFoundException("The beneficiary does not have a wallet"));
 
-        double exchangeRate = CurrencyExchangeUtil.getDefaultRate(depositorDTO.getCurrency().toString(), wallet.getCurrency().toString());
+        BigDecimal exchangeRate = CurrencyExchangeUtil.getDefaultRate(depositorDTO.getCurrency().toString(), wallet.getCurrency().toString());
 
-        double amountReceived = creditWallet(wallet, depositorDTO, exchangeRate);
+        BigDecimal amountReceived = creditWallet(wallet, depositorDTO, exchangeRate);
 
         Wallet savedWallet = walletRepository.save(wallet);
 
         TransactionData transactionData = createTransactionData(savedWallet, depositorDTO, amountReceived, amount, amountReceived,
                 depositorDTO.getCurrency(), savedWallet.getCurrency(), TransactionType.CREDIT
         );
+        transactionData.setCreatedOn(LocalDateTime.now());
+        transactionData.setLastModifiedOn(LocalDateTime.now());
+        transactionData.setCreatedBy(wallet.getUserId().toString());
+        transactionData.setLastModifiedBy(wallet.getUserId().toString());
+
         TransactionData savedTransactionData = transactionRepository.save(transactionData);
 
         return buildTransactionResponse(savedTransactionData, amount);
@@ -61,18 +75,26 @@ public class TransactionService {
     public TransactionResponse transfer(DepositorDTO depositorDTO) {
         SecurityUser loggedInUser = authUserService.getPrincipal();
         AuthUser authUser = authUserService.findUserByEmail(loggedInUser.getEmail());
+        String transactionPin = authUser.getTransactionPin();
+        System.out.println("transactionPin: " + transactionPin);
 
-        double amount = depositorDTO.getAmount();
-        if (amount <= 0) {
+        if(!passwordEncoder.matches(depositorDTO.getTransactionPin(), transactionPin)){
+            throw new TransactionPinException("Invalid pin. Transaction terminated");
+        }
+
+        BigDecimal amount = depositorDTO.getAmount();
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new InvalidAmountException("Amount cannot be less than zero");
         }
 
-        Wallet depositorWallet = walletRepository.findWalletByUserId(authUser.getUserId());
-        Wallet beneficiaryWallet = walletRepository.findWalletByAccountNumber(depositorDTO.getAccountNumber());
+        Wallet depositorWallet = walletRepository.findWalletByUserId(authUser.getUserId())
+                .orElseThrow(() -> new WalletNotFoundException("You need to create a wallet to make transactions"));
+        Wallet beneficiaryWallet = walletRepository.findWalletByAccountNumber(depositorDTO.getBeneficiaryAccountNumber())
+                .orElseThrow(() -> new WalletNotFoundException("The beneficiary does not have a wallet"));
 
-        double exchangeRate = CurrencyExchangeUtil.getDefaultRate(depositorWallet.getCurrency().toString(), beneficiaryWallet.getCurrency().toString());
+        BigDecimal exchangeRate = CurrencyExchangeUtil.getDefaultRate(depositorWallet.getCurrency().toString(), beneficiaryWallet.getCurrency().toString());
 
-        double amountInBeneficiaryCurrency = debitWallet(depositorWallet, beneficiaryWallet, depositorDTO, exchangeRate);
+        BigDecimal amountInBeneficiaryCurrency = debitWallet(depositorWallet, beneficiaryWallet, depositorDTO, exchangeRate);
 
         Wallet savedDepositorWallet = walletRepository.save(depositorWallet);
         Wallet savedBeneficiaryWallet = walletRepository.save(beneficiaryWallet);
@@ -81,6 +103,12 @@ public class TransactionService {
                 amountInBeneficiaryCurrency, savedDepositorWallet.getCurrency(), savedBeneficiaryWallet.getCurrency(),
                 TransactionType.DEBIT
         );
+
+        transactionData.setCreatedOn(LocalDateTime.now());
+        transactionData.setLastModifiedOn(LocalDateTime.now());
+        transactionData.setCreatedBy(savedDepositorWallet.getUserId().toString());
+        transactionData.setLastModifiedBy(savedDepositorWallet.getUserId().toString());
+
         TransactionData savedTransactionData = transactionRepository.save(transactionData);
 
         TransactionData receiverTransactionData = createTransactionData(savedBeneficiaryWallet, depositorDTO,
@@ -88,46 +116,49 @@ public class TransactionService {
                 savedBeneficiaryWallet.getCurrency(), TransactionType.CREDIT);
         TransactionData savedReceiverTransactionData = transactionRepository.save(receiverTransactionData);
 
+        transactionData.setCreatedOn(LocalDateTime.now());
+        transactionData.setLastModifiedOn(LocalDateTime.now());
+        transactionData.setCreatedBy(savedReceiverTransactionData.getUserId().toString());
+        transactionData.setLastModifiedBy(savedReceiverTransactionData.getUserId().toString());
+
         return buildTransactionResponse(savedTransactionData, amount);
     }
 
-    public List<TransactionResponse> getTransactionHistory() {
+    public Page<TransactionResponse> getTransactionHistory(Pageable pageable) {
         SecurityUser loggedInUser = authUserService.getPrincipal();
         AuthUser authUser = authUserService.findUserByEmail(loggedInUser.getEmail());
 
-        return transactionRepository.findByUserId(authUser.getUserId())
-                .stream()
-                .map(transactionData -> buildTransactionResponse(transactionData, transactionData.getAmount()))
-                .collect(Collectors.toList());
+        return transactionRepository.findByUserId(authUser.getUserId(), pageable)
+                .map(transactionData -> buildTransactionResponse(transactionData, transactionData.getAmount()));
     }
 
-    private double creditWallet(Wallet wallet, DepositorDTO depositorDTO, double exchangeRate) {
-        double amountDeposited = exchangeRate * depositorDTO.getAmount();
-        double amount = wallet.getAmount();
-        double totalAmount = amount + amountDeposited;
+    private BigDecimal creditWallet(Wallet wallet, DepositorDTO depositorDTO, BigDecimal exchangeRate) {
+        BigDecimal amountDeposited = depositorDTO.getAmount().multiply(exchangeRate);
+        BigDecimal amount = wallet.getAmount();
+        BigDecimal totalAmount = amount.add(amountDeposited);
         wallet.setAmount(totalAmount);
         return amountDeposited;
     }
 
-    private double debitWallet(Wallet depositorWallet, Wallet beneficiaryWallet, DepositorDTO depositorDTO, double exchangeRate) {
-        double amountToTransfer = depositorDTO.getAmount();
-        double depositorWalletAmount = depositorWallet.getAmount();
-        if (depositorWalletAmount <= amountToTransfer) {
+    private BigDecimal debitWallet(Wallet depositorWallet, Wallet beneficiaryWallet, DepositorDTO depositorDTO, BigDecimal exchangeRate) {
+        BigDecimal amountToTransfer = depositorDTO.getAmount();
+        BigDecimal depositorWalletAmount = depositorWallet.getAmount();
+        if ((depositorWalletAmount.compareTo(amountToTransfer)) <= 0) {
             throw new InvalidAmountException("Not enough credit to do transfer");
         }
-        double remainingAmount = depositorWalletAmount - amountToTransfer;
+        BigDecimal remainingAmount = depositorWalletAmount.subtract(amountToTransfer);
         depositorWallet.setAmount(remainingAmount);
 
-        double receiverWalletAmount = beneficiaryWallet.getAmount();
-        double amountToTransferInReceiverCurrency = exchangeRate * amountToTransfer;
-        double totalAmountInReceiverWallet = receiverWalletAmount + amountToTransferInReceiverCurrency;
+        BigDecimal receiverWalletAmount = beneficiaryWallet.getAmount();
+        BigDecimal amountToTransferInReceiverCurrency = amountToTransfer.multiply(exchangeRate);
+        BigDecimal totalAmountInReceiverWallet = receiverWalletAmount.add(amountToTransferInReceiverCurrency);
         beneficiaryWallet.setAmount(totalAmountInReceiverWallet);
 
         return amountToTransferInReceiverCurrency;
     }
 
     private TransactionData createTransactionData(
-            Wallet wallet, DepositorDTO depositorDTO, double amount, double amountInSenderCurrency, double amountInReceiverCurrency,
+            Wallet wallet, DepositorDTO depositorDTO, BigDecimal amount, BigDecimal amountInSenderCurrency, BigDecimal amountInReceiverCurrency,
             Currency senderCurrency, Currency receiverCurrency, TransactionType transactionType
     ) {
         return TransactionData.builder()
@@ -143,11 +174,11 @@ public class TransactionService {
                 .amountInReceiverCurrency(amountInReceiverCurrency)
                 .description(depositorDTO.getDescription())
                 .referenceNumber(generateReferenceNumber())
-                .transactionType(TransactionType.CREDIT)
+                .transactionType(transactionType)
                 .build();
     }
 
-    private TransactionResponse buildTransactionResponse(TransactionData transactionData, double amount) {
+    private TransactionResponse buildTransactionResponse(TransactionData transactionData, BigDecimal amount) {
         return TransactionResponse.builder()
                 .walletId(transactionData.getWallet().getId().toString())
                 .transactionId(transactionData.getId().toString())
@@ -157,6 +188,7 @@ public class TransactionService {
                 .referenceNumber(transactionData.getReferenceNumber())
                 .currency(transactionData.getCurrency())
                 .sender(transactionData.getSender())
+                .transactionType(transactionData.getTransactionType())
                 .description(transactionData.getDescription())
                 .build();
     }
