@@ -10,9 +10,6 @@
     <include file="db/changelog/migrations/1_0_0_4__create_user.xml"/>
     <include file="db/changelog/migrations/1_0_0_5__create_wallets.xml"/>
     <include file="db/changelog/migrations/1_0_0_6__create_transaction_data.xml"/>
-<!--    <include file="db/changelog/migrations/1_0_0_1__create_auth_user.xml"/>-->
-<!--    <include file="db/changelog/migrations/1_0_0_1__create_auth_user.xml"/>-->
-<!--    <include file="db/changelog/migrations/1_0_0_2__add_column.sql"/>-->
-<!--    <include file="db/changelog/migrations/1_0_1_0__modify_table.sql"/>-->
-
+    <include file="db/changelog/migrations/1_0_0_7__add_columns_to_user.xml"/>
+    <include file="db/changelog/migrations/1_0_0_8__update_column_in_user.xml"/>
 </databaseChangeLog>

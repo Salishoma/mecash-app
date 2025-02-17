@@ -35,7 +35,7 @@ public class BaseEntity {
     private String lastModifiedBy;
 
     @LastModifiedDate
-    @Column(name = "last_modified_0n")
+    @Column(name = "last_modified_on")
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime lastModifiedOn;
 

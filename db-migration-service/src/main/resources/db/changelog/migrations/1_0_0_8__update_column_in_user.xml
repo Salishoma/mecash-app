@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="1_0_0_8__update_transaction_pin_in_user" author="oma">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="users" columnName="transaction_pin"/>
+        </preConditions>
+        <modifyDataType tableName="users" columnName="transaction_pin" newDataType="VARCHAR(255)"/>
+    </changeSet>
+
+    <changeSet id="1_0_0_8a__update_transaction_pin_in_auth_user" author="oma">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="auth_user" columnName="transaction_pin"/>
+        </preConditions>
+        <modifyDataType tableName="auth_user" columnName="transaction_pin" newDataType="VARCHAR(255)"/>
+    </changeSet>
+
+</databaseChangeLog>
+

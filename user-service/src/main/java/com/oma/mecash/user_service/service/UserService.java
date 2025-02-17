@@ -1,6 +1,6 @@
 package com.oma.mecash.user_service.service;
 
-import com.oma.mecash.security_service.exception.AuthenticateUserException;
+import com.oma.mecash.security_service.enums.Role;
 import com.oma.mecash.security_service.model.SecurityUser;
 import com.oma.mecash.security_service.model.SignUpResponse;
 import com.oma.mecash.security_service.model.entity.AuthUser;
@@ -8,6 +8,7 @@ import com.oma.mecash.security_service.service.AuthUserService;
 import com.oma.mecash.user_service.dto.AccessTokenRequest;
 import com.oma.mecash.user_service.dto.AccessTokenResponse;
 import com.oma.mecash.user_service.dto.CreateUserDTO;
+import com.oma.mecash.user_service.dto.UpdateTransactionPinDTO;
 import com.oma.mecash.user_service.dto.UpdateUserDTO;
 import com.oma.mecash.user_service.dto.UserResponse;
 import com.oma.mecash.user_service.exception.UserNotFoundException;
@@ -17,18 +18,25 @@ import com.oma.mecash.user_service.model.Address;
 import com.oma.mecash.user_service.repository.UserRepository;
 import com.oma.mecash.user_service.service.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
     private final UserRepository userRepository;
 
     private final AuthUserService authUserService;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional(rollbackFor = Exception.class)
     public SignUpResponse createUser(CreateUserDTO createUser) {
         String email = createUser.getEmail();
         boolean exists = userRepository.existsByEmailIgnoreCase(email);
@@ -68,7 +76,7 @@ public class UserService {
     public UserResponse getUser() {
         SecurityUser loggedInUser = authUserService.getPrincipal();
         User user = userRepository.findByEmail(loggedInUser.getEmail())
-                .orElseThrow(() -> new AuthenticateUserException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         UserMapper mapper = new UserMapper();
         return mapper.userToUserResponse(user);
@@ -88,11 +96,14 @@ public class UserService {
         return "Pin created successfully";
     }
 
-    public String updateTransactionPin(String pin) {
+    public String updateTransactionPin(UpdateTransactionPinDTO transactionPinDTO) {
         Pair<AuthUser, User> pair = getPairUser();
-        authUserService.updatePin(pair.getLeft(), pin);
+        String oldPin = transactionPinDTO.getOldPin();
+        String newPin = transactionPinDTO.getNewPin();
+        log.info("oldPin: {}, newPin: {}", oldPin, newPin);
+        authUserService.updatePin(pair.getLeft(), oldPin, newPin);
         User user = pair.getRight();
-        user.setTransactionPin(passwordEncoder.encode(pin));
+        user.setTransactionPin(passwordEncoder.encode(newPin));
         userRepository.save(user);
         return "Pin updated successfully";
     }
@@ -110,7 +121,13 @@ public class UserService {
                 .userId(user.getId())
                 .email(user.getEmail())
                 .password(passwordEncoder.encode(createUser.getPassword()))
+                .roles(addRole(new HashSet<>(), Role.USER))
                 .build();
+    }
+
+    private Set<Role> addRole(Set<Role> roles, Role role) {
+        roles.add(role);
+        return roles;
     }
 
     private User createUserFromDTO(CreateUserDTO createUser, Address address) {
