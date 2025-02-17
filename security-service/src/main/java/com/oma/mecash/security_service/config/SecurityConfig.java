@@ -40,7 +40,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/swagger-ui/**", "/v3/api-docs/**")
                                 .permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/users/account", "/api/user/auth/login").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/users/account", "/api/users/auth/login").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -63,6 +63,8 @@ public class JwtService implements Serializable {
     }
 
     private String doGenerateToken(Map<String, Object> claims, String subject) {
+        log.info("claims: {}", claims);
+        log.info("subject: {}", subject);
         return Jwts.builder().claims(claims).subject(subject).issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
                 .signWith(getSignInKey(), Jwts.SIG.HS512).compact();
@@ -73,11 +75,8 @@ public class JwtService implements Serializable {
     }
 
     private SecretKey getSignInKey() {
-//        log.info("Before decode, secret key: {}", secretKey);
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-//        log.info("After decode, keybytes: {}", keyBytes.length);
         SecretKey secretKey1 = Keys.hmacShaKeyFor(keyBytes);
-//        log.info("secretKey1: {}", secretKey1);
         return secretKey1;
     }
 }

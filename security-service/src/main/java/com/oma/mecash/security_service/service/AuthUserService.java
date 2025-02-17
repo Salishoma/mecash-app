@@ -40,7 +40,6 @@ public class AuthUserService {
             throw new AuthenticateUserException("User does not exist");
         }
         Object principal = authentication.getPrincipal();
-        log.info("principal: {}", principal);
         return (SecurityUser) principal;
     }
 
@@ -61,11 +60,11 @@ public class AuthUserService {
         return jwtService.generateToken(userDetails);
     }
 
-    public void updatePin(AuthUser user, String pin){
-        if(!passwordEncoder.matches(pin, user.getTransactionPin())){
-            throw new TransactionPinException(pin);
+    public void updatePin(AuthUser user, String previousPin, String newPin){
+        if(!passwordEncoder.matches(previousPin, user.getTransactionPin())){
+            throw new TransactionPinException("Invalid pin");
         }
-        user.setTransactionPin(passwordEncoder.encode(pin));
+        user.setTransactionPin(passwordEncoder.encode(newPin));
         authUserRepository.save(user);
     }
 

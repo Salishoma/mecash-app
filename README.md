@@ -12,6 +12,7 @@ mecash is a fintech app that allows users, merchants as well as organizations to
 - **Version Control**: Git
 - **Authentication**: JWT (JSON Web Token)
 - **API Documentation**: Swagger UI
+- **DB Migration Tool**: Liquibase
 
 
 ## Services

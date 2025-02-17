@@ -1,6 +1,5 @@
 package com.oma.mecash.user_service.service;
 
-import com.oma.mecash.security_service.exception.AuthenticateUserException;
 import com.oma.mecash.security_service.model.SecurityUser;
 import com.oma.mecash.security_service.model.SignUpResponse;
 import com.oma.mecash.security_service.model.entity.AuthUser;
@@ -8,6 +7,7 @@ import com.oma.mecash.security_service.service.AuthUserService;
 import com.oma.mecash.user_service.dto.AccessTokenRequest;
 import com.oma.mecash.user_service.dto.AccessTokenResponse;
 import com.oma.mecash.user_service.dto.CreateUserDTO;
+import com.oma.mecash.user_service.dto.UpdateTransactionPinDTO;
 import com.oma.mecash.user_service.dto.UpdateUserDTO;
 import com.oma.mecash.user_service.dto.UserResponse;
 import com.oma.mecash.user_service.exception.UserExistsException;
@@ -160,17 +160,25 @@ class UserServiceTest {
     void updatePinTest() {
         String pin = "1234";
         SecurityUser securityUser = securityUser();
+        UpdateTransactionPinDTO transactionPinDTO = updateTransactionPinDTO("1234", "1235");
         when(authUserService.getPrincipal()).thenReturn(securityUser);
         when(authUserService.findUserByEmail(securityUser.getEmail())).thenReturn(new AuthUser());
         when(userRepository.findByEmailIgnoreCase(securityUser.getEmail())).thenReturn(Optional.of(user));
 
-        String response = userService.updateTransactionPin(pin);
+        String response = userService.updateTransactionPin(transactionPinDTO);
 
-        verify(authUserService).updatePin(any(AuthUser.class), anyString());
+        verify(authUserService).updatePin(any(AuthUser.class), anyString(), anyString());
         verify(userRepository).save(any(User.class));
 
         assertEquals("Pin updated successfully", response);
 
+    }
+
+    private UpdateTransactionPinDTO updateTransactionPinDTO(String oldPin, String newPin) {
+        UpdateTransactionPinDTO transactionPinDTO = new UpdateTransactionPinDTO();
+        transactionPinDTO.setOldPin(oldPin);
+        transactionPinDTO.setNewPin(newPin);
+        return transactionPinDTO;
     }
 
     private UpdateUserDTO updateUserDTO() {
