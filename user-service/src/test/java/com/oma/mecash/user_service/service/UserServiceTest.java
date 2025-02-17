@@ -11,6 +11,7 @@ import com.oma.mecash.user_service.dto.CreateUserDTO;
 import com.oma.mecash.user_service.dto.UpdateUserDTO;
 import com.oma.mecash.user_service.dto.UserResponse;
 import com.oma.mecash.user_service.exception.UserExistsException;
+import com.oma.mecash.user_service.exception.UserNotFoundException;
 import com.oma.mecash.user_service.model.Address;
 import com.oma.mecash.user_service.model.entity.User;
 import com.oma.mecash.user_service.repository.UserRepository;
@@ -107,7 +108,7 @@ class UserServiceTest {
         when(userRepository.findByEmailIgnoreCase(securityUser.getEmail()))
                 .thenReturn(Optional.empty());
 
-        assertThrows(AuthenticateUserException.class, () -> userService.updateUser(updateUser));
+        assertThrows(UserNotFoundException.class, () -> userService.updateUser(updateUser));
     }
 
     @Test

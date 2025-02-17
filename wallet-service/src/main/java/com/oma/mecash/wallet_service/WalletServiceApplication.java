@@ -13,7 +13,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
         "com.oma.mecash.security_service.config",
         "com.oma.mecash.security_service",
         "com.oma.mecash.wallet_service.service",
-        "com.oma.mecash.wallet_service.controller"})
+        "com.oma.mecash.wallet_service.controller",
+        "com.oma.mecash.user_service.exception"
+})
 @EnableJpaRepositories({"com.oma.mecash.security_service.repository", "com.oma.mecash.wallet_service.repository"})
 @SpringBootApplication
 @Slf4j

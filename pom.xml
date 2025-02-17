@@ -18,11 +18,6 @@
     <packaging>pom</packaging>
 
     <modules>
-<!--        <module>account-service</module>-->
-<!--        <module>wallet-service</module>-->
-<!--        <module>transaction-service</module>-->
-<!--        <module>security-service</module>-->
-<!--        <module>user-service</module>-->
         <module>db-migration-service</module>
         <module>security-service</module>
         <module>user-service</module>

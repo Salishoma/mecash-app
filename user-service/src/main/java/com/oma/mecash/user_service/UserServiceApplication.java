@@ -4,12 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-
-import java.util.Arrays;
-import java.util.List;
 
 @EntityScan({"com.oma.mecash.security_service.model", "com.oma.mecash.user_service.model"})
 @ComponentScan({
@@ -26,10 +22,7 @@ import java.util.List;
 public class UserServiceApplication {
 
 	public static void main(String[] args) {
-		ConfigurableApplicationContext run = SpringApplication.run(UserServiceApplication.class, args);
-
-		Arrays.stream(run.getBeanDefinitionNames())
-				.forEach((bean) ->System.out.println("Bean: " + bean));
+		SpringApplication.run(UserServiceApplication.class, args);
 	}
 
 }

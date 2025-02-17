@@ -1,10 +1,11 @@
 package com.oma.mecash.security_service.config;
 
+import com.oma.mecash.security_service.repository.AuthUserRepository;
+import com.oma.mecash.security_service.security.AuthenticationService;
 import com.oma.mecash.security_service.security.JwtFilter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,16 +28,17 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true)
 @Slf4j
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-
+    private final AuthUserRepository authUserRepository;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {
         log.info("In securityFilterChain");
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers(HttpMethod.GET, "/api/users/account")
+                        auth.requestMatchers("/swagger-ui/**", "/v3/api-docs/**")
                                 .permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/users/account", "/api/user/auth/login").permitAll()
                                 .anyRequest().authenticated()
@@ -64,7 +66,7 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> null;
+        return new AuthenticationService(authUserRepository);
     }
 
     @Bean
