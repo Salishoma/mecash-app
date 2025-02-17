@@ -33,13 +33,10 @@ public class JwtFilter extends OncePerRequestFilter {
 
         final String requestTokenHeader = request.getHeader("Authorization");
 
-        log.info("Checking Authorization Header");
-
         String username = null;
         String jwtToken = null;
 
         if (requestTokenHeader == null || !requestTokenHeader.startsWith("Bearer ")) {
-            log.info("No token found, continuing without authentication, I am testing ");
             chain.doFilter(request, response);
             return;
         }

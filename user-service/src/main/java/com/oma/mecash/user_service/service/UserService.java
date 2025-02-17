@@ -100,7 +100,6 @@ public class UserService {
         Pair<AuthUser, User> pair = getPairUser();
         String oldPin = transactionPinDTO.getOldPin();
         String newPin = transactionPinDTO.getNewPin();
-        log.info("oldPin: {}, newPin: {}", oldPin, newPin);
         authUserService.updatePin(pair.getLeft(), oldPin, newPin);
         User user = pair.getRight();
         user.setTransactionPin(passwordEncoder.encode(newPin));

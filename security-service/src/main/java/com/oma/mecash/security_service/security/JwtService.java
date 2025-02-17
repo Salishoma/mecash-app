@@ -63,7 +63,6 @@ public class JwtService implements Serializable {
     }
 
     private String doGenerateToken(Map<String, Object> claims, String subject) {
-        log.info("claims: {}", claims);
         log.info("subject: {}", subject);
         return Jwts.builder().claims(claims).subject(subject).issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))

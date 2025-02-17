@@ -3,11 +3,15 @@ package com.oma.mecash.wallet_service.dto;
 import com.oma.mecash.wallet_service.model.enums.Currency;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
 @Getter
+@Builder
+@Setter
 public class DepositorDTO {
 
     @NotBlank(message = "Account name is required")
