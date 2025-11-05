@@ -6,7 +6,7 @@ mecash is a fintech app that allows users, merchants as well as organizations to
 - **Programming Language**: Java
 - **Framework**: Spring Boot
 - **ORM**: JPA/Hibernate
-- **Database**: Relational Database (PostgreSQL)
+- **Database**: Relational Database(PostgreSQL)
 - **Testing**: JUnit, Mockito
 - **Version Control**: Git
 - **Authentication**: JWT (JSON Web Token)
