@@ -1,6 +1,5 @@
 ## MeCash App
 
-
 mecash is a fintech app that allows users, merchants as well as organizations to transfer and receive money. Transferring money to a different currency can be very stressful and time consuming, as one would have to use a second app thereby facing some bottlenecks as well as extra charges. With mecash, you have nothing to worry about as we got you covered. Transferring money to other currency has never been made easier than this as all you need to do is just a click away and your money is transferred to the other account's currency.
 
 ## Technology
