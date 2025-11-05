@@ -39,6 +39,7 @@ public class UserService {
     @Transactional(rollbackFor = Exception.class)
     public SignUpResponse createUser(CreateUserDTO createUser) {
         String email = createUser.getEmail();
+        log.info("email: {}", email);
         boolean exists = userRepository.existsByEmailIgnoreCase(email);
         if (exists) {
             throw new UserExistsException(String.format("Email %s has already been used", email));
